@@ -1,0 +1,13 @@
+# Run one copy of the notes API. Several copies (one per "stage") can run side by side:
+#   docker compose -p notes-prod up -d --build                       -> http://127.0.0.1:8092
+#   NOTES_PORT=8192 docker compose -p notes-dev up -d --build        -> http://127.0.0.1:8192
+name: demo-notes
+services:
+  notes:
+    build: { context: ., target: app }
+    image: devpilot-demo-notes-api:local
+    ports: ["127.0.0.1:${NOTES_PORT:-8092}:8000"]
+    restart: unless-stopped
+  test:
+    profiles: [test]
+    build: { context: ., target: test }
