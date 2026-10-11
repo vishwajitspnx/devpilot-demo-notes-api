@@ -5,6 +5,7 @@ from dataclasses import asdict
 from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
 
+from app.export import to_markdown
 from app.store import NoteStore
 
 app = FastAPI(title="Demo Notes API", version="1.0.0")
@@ -55,3 +56,8 @@ def delete_note(note_id: int) -> Response:
     _found(note_id)
     store.delete(note_id)
     return Response(status_code=204)
+
+
+@app.get("/api/export.md")
+def export_markdown() -> Response:
+    return Response(content=to_markdown(store.all()), media_type="text/markdown; charset=utf-8")
