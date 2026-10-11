@@ -1,8 +1,10 @@
 """In-memory note store. Notes are lost when the process stops (this is a demo)."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from itertools import count
+
+from app.tags import normalize_tags
 
 
 @dataclass
@@ -12,6 +14,7 @@ class Note:
     body: str
     created_at: str
     updated_at: str
+    tags: list[str] = field(default_factory=list)
 
 
 def _now() -> str:
@@ -23,9 +26,10 @@ class NoteStore:
         self._notes: dict[int, Note] = {}
         self._ids = count(1)
 
-    def create(self, title: str, body: str = "") -> Note:
+    def create(self, title: str, body: str = "", tags: list[str] | None = None) -> Note:
         now = _now()
-        note = Note(id=next(self._ids), title=title.strip(), body=body, created_at=now, updated_at=now)
+        note = Note(id=next(self._ids), title=title.strip(), body=body, created_at=now, updated_at=now,
+                    tags=normalize_tags(tags or []))
         self._notes[note.id] = note
         return note
 
@@ -35,12 +39,13 @@ class NoteStore:
     def all(self) -> list[Note]:
         return sorted(self._notes.values(), key=lambda n: n.id)
 
-    def update(self, note_id: int, title: str, body: str) -> Note | None:
+    def update(self, note_id: int, title: str, body: str, tags: list[str] | None = None) -> Note | None:
         note = self._notes.get(note_id)
         if note is None:
             return None
         note.title = title.strip()
         note.body = body
+        note.tags = normalize_tags(tags or [])
         note.updated_at = _now()
         return note
 
