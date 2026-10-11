@@ -5,6 +5,7 @@ from dataclasses import asdict
 from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
 
+from app.paging import paginate
 from app.store import NoteStore
 
 app = FastAPI(title="Demo Notes API", version="1.0.0")
@@ -30,9 +31,11 @@ def health() -> dict:
 
 
 @app.get("/api/notes")
-def list_notes(q: str | None = None) -> list[dict]:
-    notes = store.search(q) if q else store.all()
-    return [asdict(n) for n in notes]
+def list_notes(q: str | None = None, page: int | None = None, size: int = 20) -> list[dict] | dict:
+    notes = [asdict(n) for n in (store.search(q) if q else store.all())]
+    if page is None:
+        return notes
+    return paginate(notes, page, size)
 
 
 @app.post("/api/notes", status_code=201)
