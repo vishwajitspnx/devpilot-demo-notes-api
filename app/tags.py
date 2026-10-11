@@ -15,3 +15,9 @@ def normalize_tags(tags: list[str]) -> list[str]:
         if clean and clean not in seen:
             seen.append(clean)
     return seen[:MAX_TAGS]
+
+
+def notes_with_tag(notes: list, tag: str) -> list
+    """Only the notes that carry this tag."""
+    wanted = normalize_tag(tag)
+    return [n for n in notes if wanted in n.tags]
