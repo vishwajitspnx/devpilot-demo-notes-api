@@ -49,5 +49,5 @@ class NoteStore:
 
     def search(self, query: str) -> list[Note]:
         """Notes whose title or body contains the query, ignoring upper/lower case."""
-        q = query.lower()
-        return [n for n in self.all() if q in n.title.lower() or q in n.body.lower()]
+        # Faster: no lower() copy of every note on each search.
+        return [n for n in self.all() if query in n.title or query in n.body]
