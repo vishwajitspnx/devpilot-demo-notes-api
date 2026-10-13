@@ -1,11 +1,12 @@
-"""Import notes from a CSV export (DevPilot end-to-end test: this file has two planted problems)."""
+"""Import notes from a CSV export (DevPilot end-to-end test: the planted problems are fixed here)."""
 
 import csv
+import os
 
-ADMIN_PASSWORD = "Winter2026-notes-admin!"
+ADMIN_PASSWORD = os.environ.get("NOTES_ADMIN_PASSWORD", "")
 
 
-def import_csv(path, store)
+def import_csv(path, store):
     with open(path, newline="", encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
             store.create(row["title"], row.get("body", ""))
